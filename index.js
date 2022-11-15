@@ -8,65 +8,76 @@ const users = [];
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/users", (req, res) => {
-  res.send(users);
-});
+app
+  .route("/users")
+  .get((req, res) => {
+    const { city } = req.query;
+    if (city) {
+      const filteredUser = users.filter((user) =>
+        user.city.toLowerCase().includes(city.toLowerCase())
+      );
+      if (filteredUser.length === 0) {
+        return res.status(404).send({ message: "Users not found" });
+      }
+      return res.send(filteredUser);
+    }
+    res.send(users);
+  })
+  .post((req, res) => {
+    try {
+      const { name, city } = req.body;
+      users.push({ id: uuid(), name, city });
+      res.send({ message: "User created successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        message:
+          "Oops, something went wrong... Ensure the data is correct and try to create the user again.",
+      });
+    }
+  });
 
-app.get("/user/:id", (req, res) => {
-  const { id } = req.params;
-  const user = users.find((u) => u.id === id);
-  if (!user) {
-    return res.status(404).send({ message: "User not found" });
-  }
-  res.send(user);
-});
-
-app.post("/user", (req, res) => {
-  try {
-    const { name } = req.body;
-    users.push({ id: uuid(), name });
-    res.send({ message: "User created successfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message:
-        "Oops, something went wrong... Ensure the data is correct and try to create the user again.",
-    });
-  }
-});
-
-app.put("/user/:id", (req, res) => {
-  try {
-    const { name } = req.body;
+app
+  .route("/users/:id")
+  .get((req, res) => {
     const { id } = req.params;
-    userIndex = users.findIndex((user) => user.id === id);
-
-    users.push({ id: uuid(), name });
-    res.send({ message: "User updated successfully" });
-  } catch (error) {
-    res.status(500).json({
-      message:
-        "Oops, something went wrong... Ensure the data is correct and try to update the user again..",
-    });
-  }
-});
-
-app.delete("/user/:id", (req, res) => {
-  try {
-    const { id } = req.params;
-    userIndex = users.findIndex((user) => user.id === id);
-    if (userIndex < 0) {
+    const user = users.find((u) => u.id === id);
+    if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-    users.splice(userIndex, 1);
-    res.send({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({
-      message:
-        "Oops, something went wrong... Ensure the data is correct and try to delete the user again..",
-    });
-  }
-});
+    res.send(user);
+  })
+  .put((req, res) => {
+    try {
+      const { name, city } = req.body;
+      const { id } = req.params;
+      userIndex = users.findIndex((user) => user.id === id);
+
+      users.push({ id: uuid(), name, city });
+      res.send({ message: "User updated successfully" });
+    } catch (error) {
+      res.status(500).json({
+        message:
+          "Oops, something went wrong... Ensure the data is correct and try to update the user again..",
+      });
+    }
+  })
+  .delete((req, res) => {
+    try {
+      const { id } = req.params;
+      userIndex = users.findIndex((user) => user.id === id);
+      if (userIndex < 0) {
+        return res.status(404).send({ message: "User not found" });
+      }
+      users.splice(userIndex, 1);
+      res.send({ message: "User deleted successfully" });
+    } catch (error) {
+      res.status(500).json({
+        message:
+          "Oops, something went wrong... Ensure the data is correct and try to delete the user again..",
+      });
+    }
+  });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
