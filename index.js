@@ -4,12 +4,6 @@ const usersRoutes = require("./routes/users");
 const app = express();
 const port = 3000;
 
-const logProp = (propName, prop) => {
-  if (Object.values(prop).length) {
-    console.log(`${propName}: ${JSON.stringify(prop)}`);
-  }
-};
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
