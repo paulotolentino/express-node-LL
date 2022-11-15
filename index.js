@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   console.log("middleware 1");
   if (req.originalUrl === "/") {
-    return res.send({ message: "This route does not exist" });
+    return res.status(404).send({ message: "This route does not exist" });
   }
   next();
 });
