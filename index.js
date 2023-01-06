@@ -3,7 +3,18 @@ const { v4: uuid } = require("uuid");
 const app = express();
 const port = 3000;
 
-const users = [];
+const users = [
+  {
+    id: "53bec65b-30bb-4b69-9fdf-971c198a9f32",
+    name: "Paulo",
+    city: "Campinas",
+  },
+  {
+    id: "81d14792-1b99-4793-9fea-a66d37da3cb5",
+    name: "Elon Musk",
+    city: "Boca Chica",
+  },
+];
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
