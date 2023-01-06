@@ -47,11 +47,16 @@ router
     try {
       const { name, city } = req.body;
       const { id } = req.params;
-      userIndex = users.findIndex((user) => user.id === id);
-
-      users.push({ id: uuid(), name, city });
+      const userIndex = users.findIndex((user) => user.id === id);
+      const userOldData = users[userIndex];
+      users[userIndex] = {
+        ...users[userIndex],
+        name: name ?? userOldData.name,
+        city: city ?? userOldData.city,
+      };
       res.send({ message: "User updated successfully" });
     } catch (error) {
+      console.log(error);
       res.status(500).json({
         message:
           "Oops, something went wrong... Ensure the data is correct and try to update the user again..",
@@ -68,6 +73,7 @@ router
       users.splice(userIndex, 1);
       res.send({ message: "User deleted successfully" });
     } catch (error) {
+      console.log(error);
       res.status(500).json({
         message:
           "Oops, something went wrong... Ensure the data is correct and try to delete the user again..",
